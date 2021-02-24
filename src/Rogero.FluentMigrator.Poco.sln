@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogero.FluentMigrator.Poco.Tests", "Rogero.FluentMigrator.Poco.Tests\Rogero.FluentMigrator.Poco.Tests.csproj", "{0A21A8A9-8B1C-4DBE-A04A-459950D9EA54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniqueDb.ConnectionProvider", "..\UniqueDb.ConnectionProvider\src\UniqueDb.ConnectionProvider\UniqueDb.ConnectionProvider.csproj", "{05C97F43-3D06-4575-9A48-1D792143D1FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogero.FluentMigrator.Poco", "Rogero.FluentMigrator.Poco\Rogero.FluentMigrator.Poco.csproj", "{DC70B0AA-497D-4194-A3AC-17258452042E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A21A8A9-8B1C-4DBE-A04A-459950D9EA54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A21A8A9-8B1C-4DBE-A04A-459950D9EA54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A21A8A9-8B1C-4DBE-A04A-459950D9EA54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A21A8A9-8B1C-4DBE-A04A-459950D9EA54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05C97F43-3D06-4575-9A48-1D792143D1FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05C97F43-3D06-4575-9A48-1D792143D1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05C97F43-3D06-4575-9A48-1D792143D1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05C97F43-3D06-4575-9A48-1D792143D1FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC70B0AA-497D-4194-A3AC-17258452042E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC70B0AA-497D-4194-A3AC-17258452042E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC70B0AA-497D-4194-A3AC-17258452042E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC70B0AA-497D-4194-A3AC-17258452042E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
