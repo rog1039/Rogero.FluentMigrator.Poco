@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco.Attributes
 {
     public class IdentityAttribute : Attribute
     {

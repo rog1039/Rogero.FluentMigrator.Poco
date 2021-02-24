@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Data;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco.Attributes
 {
     public class TableNameAttribute : Attribute
     {
@@ -11,6 +12,16 @@ namespace Rogero.FluentMigrator.Poco.Tests
         {
             TableName  = tableName;
             SchemaName = schemaName;
+        }
+    }
+
+    public class CascadeRuleAttribute : Attribute
+    {
+        public Rule CascadeRule { get; set; }
+
+        public CascadeRuleAttribute(Rule cascadeRule)
+        {
+            CascadeRule = cascadeRule;
         }
     }
 }

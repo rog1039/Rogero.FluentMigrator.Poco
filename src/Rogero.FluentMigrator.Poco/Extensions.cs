@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FluentMigrator.Infrastructure.Extensions;
+using Rogero.FluentMigrator.Poco.Attributes;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco
 {
     public static class Extensions
     {

@@ -1,22 +1,21 @@
 ﻿using System;
-using Rogero.FluentMigrator.Poco.Tests.RelationalTypes;
+using Rogero.FluentMigrator.Poco.RelationalTypes;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco
 {
     public class ColumnData
     {
-        public ColumnNameInformation      ColumnNameInformation { get; set; }
-        public ColumnType                 ColumnType            { get; set; }
+        public ColumnDataName      ColumnDataName { get; set; }
         
-        public PrimaryKeyInformation?     PrimaryKeyInformation { get; set; }
-        public ColumnIdentityInformation? IdentityInformation   { get; set; }
-        public ForeignKeyInformation?     ForeignKeyInformation { get; set; }
-        public SqlTypeAttribute?          SqlTypeAttribute      { get; set; }         
+        public ColumnDataPrimaryKey?  PrimaryKeyInformation  { get; set; }
+        public ColumnDataIdentity?    IdentityInformation    { get; set; }
+        public ColumnDataForeignKey?  ForeignKeyInformation  { get; set; }
+        public SqlTypeAttributeBase?  SqlTypeAttribute       { get; set; }
+        public ColumnDataCascadeRule? CascadeRuleInformation { get; set; }
 
-        public ColumnData(ColumnNameInformation columnNameInformation, ColumnType columnType)
+        public ColumnData(ColumnDataName columnDataName)
         {
-            ColumnNameInformation = columnNameInformation;
-            ColumnType            = columnType;
+            ColumnDataName = columnDataName;
         }
 
         public override string ToString()
@@ -33,7 +32,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
                 : String.Empty;
             var type = SqlTypeAttribute.ToSqlServerDefinition();
             return
-                $"{ColumnNameInformation.Name}: Type ({type})" +
+                $"{ColumnDataName.Name}: Type ({type})" +
                 primaryKey +
                 foreignKey;
         }

@@ -2,17 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-
         <IsPackable>false</IsPackable>
-
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentMigrator" Version="3.2.15" />
-        <PackageReference Include="FluentMigrator.Extensions.SqlServer" Version="3.2.15" />
         <PackageReference Include="FluentMigrator.Runner" Version="3.2.15" />
-        <PackageReference Include="FluentMigrator.Runner.SqlServer" Version="3.2.15" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -26,7 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\UniqueDb.ConnectionProvider\src\UniqueDb.ConnectionProvider\UniqueDb.ConnectionProvider.csproj" />
+      <ProjectReference Include="..\..\..\UniqueDb.ConnectionProvider\src\UniqueDb.ConnectionProvider\UniqueDb.ConnectionProvider.csproj" />
+      <ProjectReference Include="..\Rogero.FluentMigrator.Poco\Rogero.FluentMigrator.Poco.csproj" />
     </ItemGroup>
 
 </Project>

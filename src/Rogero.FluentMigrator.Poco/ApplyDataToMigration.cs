@@ -3,9 +3,9 @@ using System.Linq;
 using FluentMigrator;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.SqlServer;
-using Rogero.FluentMigrator.Poco.Tests.RelationalTypes;
+using Rogero.FluentMigrator.Poco.RelationalTypes;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco
 {
     public static class ApplyDataToMigration
     {
@@ -18,7 +18,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
 
             foreach (var column in columns)
             {
-                var colExp  = tableExp.WithColumn(column.ColumnNameInformation.Name);
+                var colExp  = tableExp.WithColumn(column.ColumnDataName.Name);
                 var colExp2 = ApplyColumnType(column, colExp);
 
                 if (column.PrimaryKeyInformation is {IsPrimaryKey: true})
@@ -37,7 +37,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
                         .ForeignKey(fk.GetForeignKeyName(),
                                     fk.PrimarySchemaName,
                                     fk.PrimaryTableName,
-                                    fk.PrimaryColumnNames.Single()
+                                    fk.PrimaryColumnNames
                         )
                         .OnDelete(fk.CascadeDeleteRule);
                 }
@@ -54,10 +54,10 @@ namespace Rogero.FluentMigrator.Poco.Tests
         public static ICreateTableColumnOptionOrWithColumnSyntax ApplyColumnType(
             ColumnData column, ICreateTableColumnAsTypeSyntax exp)
         {
-            if (column.SqlTypeAttribute != null)
+            if(column.SqlTypeAttribute == null) throw new InvalidOperationException("Column does not have SqlType");
+            
+            return column.SqlTypeAttribute switch
             {
-                return column.SqlTypeAttribute switch
-                {
                 BinaryTypeAttribute binaryTypeAttribute       => exp.AsBinary(binaryTypeAttribute.Length),
                 BoolTypeAttribute boolTypeAttribute           => exp.AsBoolean(),
                 ByteTypeAttribute byteTypeAttribute           => exp.AsByte(),
@@ -76,23 +76,8 @@ namespace Rogero.FluentMigrator.Poco.Tests
                 StringTypeAttribute stringTypeAttribute       => ApplyStringAttribute(exp, stringTypeAttribute),
                 TimeTypeAttribute timeTypeAttribute           => exp.AsTime(),
                 XmlTypeAttribute xmlTypeAttribute             => exp.AsXml(),
-                _                                             => throw new ArgumentOutOfRangeException($"No match for: {column.SqlTypeAttribute.GetType().FullName}")
-                };
-            }
-
-
-            return column.ColumnType switch
-            {
-                ColumnTypeDecimal ctDecimal => exp.AsDecimal(ctDecimal.Precision, ctDecimal.Scale),
-                ColumnTypeString ctString => exp.AsString(ctString.Length.Value),
-                ColumnTypeCustom {SqlTypeDefinition: "datetime2"} => exp.AsDateTime2(),
-                ColumnTypeCustom {SqlTypeDefinition: "int"} => exp.AsInt32(),
-                ColumnTypeCustom {SqlTypeDefinition: "decimal(38,12)"} => exp.AsDecimal(38, 12),
-                ColumnTypeCustom {SqlTypeDefinition: "bigint"} => exp.AsInt64(),
-                ColumnTypeCustom {SqlTypeDefinition: "float"} => exp.AsFloat(),
-                ColumnTypeCustom {SqlTypeDefinition: "bit"} => exp.AsBoolean(),
-
-                _ => throw new ArgumentOutOfRangeException($"Column type not mapped: {column.ColumnType.ToString()}")
+                _                                             => throw new ArgumentOutOfRangeException(
+                    $"No match for: {column.SqlTypeAttribute.GetType().FullName}")
             };
         }
 

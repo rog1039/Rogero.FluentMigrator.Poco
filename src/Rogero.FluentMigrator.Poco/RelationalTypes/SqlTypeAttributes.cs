@@ -1,25 +1,15 @@
 ﻿using System;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco.RelationalTypes
 {
-}
-
-
-namespace Rogero.FluentMigrator.Poco.Tests.RelationalTypes
-{
-    public abstract class SqlTypeAttribute : Attribute
-    {
-        public abstract string ToSqlServerDefinition();
-    }
-
     /// <summary>
     /// By default, this specifies a variable, Unicode, max-length string.
     /// </summary>
-    public class StringTypeAttribute : SqlTypeAttribute
+    public class StringTypeAttribute : SqlTypeAttributeBase
     {
-        public int    Length        { get; set; } = Int32.MaxValue;
-        public object Collation     { get; set; }
-        public bool   IsFixedLength { get; set; } = false;
+        public int     Length        { get; set; } = Int32.MaxValue;
+        public object? Collation     { get; set; }
+        public bool    IsFixedLength { get; set; } = false;
 
         /// <summary>
         /// ANSI is an 8-bit character type extending from 7-bit ASCII.
@@ -40,35 +30,35 @@ namespace Rogero.FluentMigrator.Poco.Tests.RelationalTypes
         {
             return (IsAnsi, IsFixedLength) switch
             {
-                (true, true)   => $"char({Length})",
-                (true, false)  => $"nchar({Length})",
-                (false, true)  => $"varchar({Length})",
-                (false, false) => $"nvarchar({Length})",
+                (true, true)   => $"char({Length.ToSqlLength()})",
+                (true, false)  => $"nchar({Length.ToSqlLength()})",
+                (false, true)  => $"varchar({Length.ToSqlLength()})",
+                (false, false) => $"nvarchar({Length.ToSqlLength()})",
             };
         }
     }
 
-    public class Int32TypeAttribute : SqlTypeAttribute
+    public class Int32TypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "int";
     }
 
-    public class Int16TypeAttribute : SqlTypeAttribute
+    public class Int16TypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "smallint";
     }
 
-    public class Int64TypeAttribute : SqlTypeAttribute
+    public class Int64TypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "bigint";
     }
 
-    public class BoolTypeAttribute : SqlTypeAttribute
+    public class BoolTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "bit";
     }
 
-    public class BinaryTypeAttribute : SqlTypeAttribute
+    public class BinaryTypeAttribute : SqlTypeAttributeBase
     {
         public int  Length     { get; set; }
         public bool IsVariable { get; set; }
@@ -82,34 +72,34 @@ namespace Rogero.FluentMigrator.Poco.Tests.RelationalTypes
         public override string ToSqlServerDefinition()
         {
             return IsVariable
-                ? $"varbinary({Length})"
-                : $"binary({Length})";
+                ? $"varbinary({Length.ToSqlLength()})"
+                : $"binary({Length.ToSqlLength()})";
         }
     }
 
-    public class ByteTypeAttribute : SqlTypeAttribute
+    public class ByteTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "tinyint";
     }
 
-    public class CurrencyTypeAttribute : SqlTypeAttribute
+    public class CurrencyTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "money";
     }
 
-    public class DateTime2TypeAttribute : SqlTypeAttribute
+    public class DateTime2TypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => "datetime2(7)";
     }
 
-    public class DateTimeOffsetTypeAttribute : SqlTypeAttribute
+    public class DateTimeOffsetTypeAttribute : SqlTypeAttributeBase
     {
         public int Precision { get; set; }
 
         public override string ToSqlServerDefinition() => "datetimeoffset";
     }
 
-    public class DecimalTypeAttribute : SqlTypeAttribute
+    public class DecimalTypeAttribute : SqlTypeAttributeBase
     {
         public int Precision { get; set; }
         public int Scale     { get; set; }
@@ -123,40 +113,45 @@ namespace Rogero.FluentMigrator.Poco.Tests.RelationalTypes
         public override string ToSqlServerDefinition() => $"decimal({Precision}, {Scale})";
     }
 
-    public class DoubleTypeAttribute : SqlTypeAttribute
+    public class DoubleTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => $"double";
     }
 
-    public class GuidTypeAttribute : SqlTypeAttribute
+    public class GuidTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => $"uniqueidentifier";
     }
 
-    public class FloatTypeAttribute : SqlTypeAttribute
+    public class FloatTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => $"float";
     }
 
-    public class TimeTypeAttribute : SqlTypeAttribute
+    public class TimeTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => $"time";
     }
 
-    public class XmlTypeAttribute : SqlTypeAttribute
+    public class XmlTypeAttribute : SqlTypeAttributeBase
     {
-        public int    Length                  { get; set; }
+        public          int    Length                  { get; set; }
         public override string ToSqlServerDefinition() => $"xml";
     }
 
-    public class RowVersionType : SqlTypeAttribute
+    public class RowVersionType : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => $"rowversion";
     }
 
-    public class CustomTypeAttribute : SqlTypeAttribute
+    public class CustomTypeAttribute : SqlTypeAttributeBase
     {
         public string CustomName { get; set; }
+
+        public CustomTypeAttribute(string customName)
+        {
+            CustomName = customName;
+        }
 
         public override string ToSqlServerDefinition() => CustomName;
     }

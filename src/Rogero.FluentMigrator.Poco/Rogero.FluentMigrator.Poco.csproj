@@ -2,6 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentMigrator" Version="3.2.15" />
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.15" />
+    </ItemGroup>
 
 </Project>

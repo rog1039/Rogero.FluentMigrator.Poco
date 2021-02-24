@@ -1,101 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions.Formatting;
-using FluentMigrator;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
-using Rogero.FluentMigrator.Poco.Tests.RelationalTypes;
 using Rogero.FluentMigrator.Poco.Tests.Runner;
 using UniqueDb.ConnectionProvider;
-using UniqueDb.ConnectionProvider.DataGeneration;
 
 namespace Rogero.FluentMigrator.Poco.Tests
 {
-    public class MyDecimalSqlTypeAttribute : DecimalTypeAttribute
-    {
-        public MyDecimalSqlTypeAttribute() : base(38, 12) { }
-    }
-    
-    [TableName("Sales.Order")]
-    public record Order2(
-        [property: PrimaryKey] [property: Identity]
-        int OrderNumber,
-        [property: StringType(200)]
-        string CustomerName,
-        [property: StringType(100)]
-        string? PONumber
-    );
-
-    public record OrderLine2(
-        [property: PrimaryKey] [property: ForeignKeyRef(typeof(Order2), Rule.Cascade, nameof(Order2.OrderNumber))]
-        int OrderNumber,
-        [property: PrimaryKey]
-        int OrderLineNumber,
-        [property: ForeignKeyRef(typeof(Part2), Rule.Cascade, nameof(Part2.PartNumber))] [property: StringType(50)]
-        string PartNumber,
-
-        [property: MyDecimalSqlType]
-        decimal Quantity
-    );
-
-    public class OrderRelease2
-    {
-        [PrimaryKey()]
-        [ForeignKeyRef(typeof(OrderLine2), Rule.Cascade, nameof(Order2.OrderNumber), foreignKeyGroupId:"fk_OrderLine")]
-        public int OrderNumber { get; }
-
-        [PrimaryKey]
-        [ForeignKeyRef(typeof(OrderLine2), Rule.Cascade, "OrderLineNumber", "fk_OrderLine")]
-        public int OrderLineNumber { get; set; }
-        
-        [PrimaryKey]
-        public int OrderReleaseNumber { get; set; }
-
-        public DateTime ShipDate { get; set; }
-
-        [MyDecimalSqlType]
-        public decimal Quantity { get; set; }
-    }
-
-    [TableName("Inventory.Part2")]
-    public class Part2
-    {
-        [PrimaryKey()]
-        [StringType(50)]
-        public string PartNumber { get; set; }
-
-        [StringType(Length = 50)]
-        public string PartDescription { get; set; }
-        
-        [RowVersionType]
-        public byte[] RowVersion { get; set; }
-    }
-
-    [Migration(1)]
-    [Tags("Group1")]
-    public class MyMigration1 : Migration
-    {
-        public override void Up()
-        {
-            var types   = new List<Type>() { typeof(Part2),typeof(Order2), typeof(OrderLine2), typeof(OrderRelease2)};
-            var configs = types.Select(TableDataFactory.GetTableCreationData);
-            foreach (var creationData in configs)
-            {
-                this.Apply(creationData);
-            }
-        }
-
-        public override void Down()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class DbManipulator
     {
         public           IList<string>          Tags { get; set; }
@@ -128,7 +42,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
                         .WithGlobalConnectionString(_sqlConnectionProvider.GetSqlConnectionString())
 
                         // Define the assembly containing the migrations
-                        .ScanIn(typeof(MyRunnerTests).Assembly)
+                        .ScanIn(typeof(RunMigrationsTest).Assembly)
                         .For.Migrations()
                         .For.EmbeddedResources();
                 })
