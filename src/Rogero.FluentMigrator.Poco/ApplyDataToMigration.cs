@@ -3,12 +3,20 @@ using System.Linq;
 using FluentMigrator;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.SqlServer;
+using Microsoft.Extensions.DependencyInjection;
 using Rogero.FluentMigrator.Poco.RelationalTypes;
 
 namespace Rogero.FluentMigrator.Poco
 {
     public static class ApplyDataToMigration
     {
+        public static void Apply(this Migration migration, DbModel dbModel)
+        {
+            foreach (var outputTableData in dbModel.OutputTableDatas)
+            {
+                migration.Apply(outputTableData);
+            }
+        }
         public static void Apply(this Migration migration, TableData tableData)
         {
             var (table, columns) = tableData;
@@ -72,7 +80,7 @@ namespace Rogero.FluentMigrator.Poco
                 Int16TypeAttribute int16TypeAttribute         => exp.AsInt16(),
                 Int32TypeAttribute int32TypeAttribute         => exp.AsInt32(),
                 Int64TypeAttribute int64TypeAttribute         => exp.AsInt64(),
-                RowVersionType rowVersionType                 => exp.AsCustom("rowversion"),
+                RowVersionTypeAttribute rowVersionType        => exp.AsCustom("rowversion"),
                 StringTypeAttribute stringTypeAttribute       => ApplyStringAttribute(exp, stringTypeAttribute),
                 TimeTypeAttribute timeTypeAttribute           => exp.AsTime(),
                 XmlTypeAttribute xmlTypeAttribute             => exp.AsXml(),

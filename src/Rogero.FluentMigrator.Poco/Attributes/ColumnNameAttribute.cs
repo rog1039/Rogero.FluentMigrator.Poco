@@ -6,9 +6,9 @@ namespace Rogero.FluentMigrator.Poco.Attributes
     {
         public string ColumnName { get; }
 
-        public ColumnNameAttribute(string ColumnName)
+        public ColumnNameAttribute(string columnName)
         {
-            ColumnName = ColumnName;
+            ColumnName = columnName;
         }
     }
 }

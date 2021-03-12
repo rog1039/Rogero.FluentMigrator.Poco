@@ -56,7 +56,7 @@ namespace Rogero.FluentMigrator.Poco
             var propertyNameIsRowVersion = string.Equals(propertyInfo.Name, "rowversion",
                                                   StringComparison.InvariantCultureIgnoreCase);
 
-            if (columnNameIsRowVersion || propertyNameIsRowVersion) return new RowVersionType();
+            if (columnNameIsRowVersion || propertyNameIsRowVersion) return new RowVersionTypeAttribute();
 
             return DotnetToSqlTypeConverter.Convert(propertyInfo.PropertyType);
         }
@@ -84,10 +84,13 @@ namespace Rogero.FluentMigrator.Poco
             if (identityAttribute != null)
                 return new ColumnDataIdentity(identityAttribute.Seed, identityAttribute.Increment);
 
-            var isColumnPrimaryKey = columnData.PrimaryKeyInformation?.IsPrimaryKey == true;
-            var isColumnAnInt = columnData.SqlTypeAttribute is Int16TypeAttribute
-                             || columnData.SqlTypeAttribute is Int32TypeAttribute
-                             || columnData.SqlTypeAttribute is Int64TypeAttribute;
+            /*
+             * Here we used to do some inferring to decide if we should auto-enable Identity(1,1) on this column.
+             * We were pretty broad, just being a PK and an Int16/32/64 would qualify you as Identity(1,1).
+             * Since you can only have 1 Identity column per table this resulted in invalid sql create table statements.
+             * So, now we don't do this.
+             *
+             *
             if (isColumnPrimaryKey && isColumnAnInt)
             {
                 return new ColumnDataIdentity(1, 1);
@@ -95,6 +98,21 @@ namespace Rogero.FluentMigrator.Poco
             
             return identityAttribute != null
                 ? new ColumnDataIdentity(identityAttribute.Seed, identityAttribute.Increment)
+                : null;
+             *
+             * Now you must be: PK, Int16/32/64, & have name == Id;
+             */
+            var isColumnPrimaryKey = columnData.PrimaryKeyInformation?.IsPrimaryKey == true;
+            var isColumnAnInt = columnData.SqlTypeAttribute is Int16TypeAttribute
+                             || columnData.SqlTypeAttribute is Int32TypeAttribute
+                             || columnData.SqlTypeAttribute is Int64TypeAttribute;
+            var isColumnNamedId = string.Equals(columnData.ColumnDataName.Name, 
+                                                "id",
+                                                StringComparison.OrdinalIgnoreCase);
+
+            var shouldInferAsIdentityColumn = (isColumnNamedId && isColumnPrimaryKey && isColumnAnInt);
+            return shouldInferAsIdentityColumn
+                ? new ColumnDataIdentity(1, 1)
                 : null;
         }
 

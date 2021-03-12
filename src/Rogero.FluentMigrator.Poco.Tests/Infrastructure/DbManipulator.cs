@@ -16,7 +16,9 @@ namespace Rogero.FluentMigrator.Poco.Tests
         private readonly ISqlConnectionProvider _sqlConnectionProvider;
         private readonly IServiceProvider       _serviceProvider;
 
-        public bool Log { get; set; }
+        public bool PreviewOnly     { get; set; } = false;
+        public bool ShowElapsedTime { get; set; } = false;
+        public bool ShowSql         { get; set; } = false;
 
         public DbManipulator(ISqlConnectionProvider sqlConnectionProvider, IEnumerable<string> tags = null)
         {
@@ -32,6 +34,12 @@ namespace Rogero.FluentMigrator.Poco.Tests
 
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
+                .Configure<FluentMigratorLoggerOptions>(
+                    opt =>
+                    {
+                        opt.ShowElapsedTime = ShowElapsedTime;
+                        opt.ShowSql         = ShowSql;
+                    })
                 .ConfigureRunner(rb =>
                 {
                     rb
@@ -39,16 +47,25 @@ namespace Rogero.FluentMigrator.Poco.Tests
                         .AddSqlServer2016()
 
                         // Set the connection string
-                        .WithGlobalConnectionString(_sqlConnectionProvider.GetSqlConnectionString())
+                        //We allow null (hence ?.) because it is useful when running migrations in Preview mode so we can see the SQL.
+                        .WithGlobalConnectionString(_sqlConnectionProvider?.GetSqlConnectionString())
 
                         // Define the assembly containing the migrations
                         .ScanIn(typeof(RunMigrationsTest).Assembly)
                         .For.Migrations()
-                        .For.EmbeddedResources();
+                        .For.EmbeddedResources()
+                        .ConfigureGlobalProcessorOptions(opt =>
+                        {
+                            opt.PreviewOnly = PreviewOnly;
+                        })
+                        ;
                 })
 
                 // Enable logging to console in the FluentMigrator way
-                .AddLogging(lb => lb.AddFluentMigratorConsole())
+                .AddLogging(lb =>
+                {
+                    lb.AddFluentMigratorConsole();
+                })
                 .Configure<RunnerOptions>(ro =>
                 {
                     /*

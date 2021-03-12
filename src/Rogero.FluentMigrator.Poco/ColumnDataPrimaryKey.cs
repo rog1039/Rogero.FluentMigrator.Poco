@@ -5,7 +5,6 @@
         public override string ToString()
         {
             return IsPrimaryKey ? "PrimaryKey" : "---";
-            return $"IsPrimaryKey: {IsPrimaryKey}";
         }
     }
 }

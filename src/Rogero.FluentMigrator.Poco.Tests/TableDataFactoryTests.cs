@@ -26,7 +26,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
 
             tableDatas.ForEach(tableData => Console.WriteLine(tableData.ToString()));
 
-            tableDatas.ForEach(tableData => tableData.ColumnCreationData.PrintStringTable());
+            tableDatas.ForEach(tableData => tableData.ColumnCreationData.PrintStringTable(tableData.TableName.ToStringBracketed()));
         }
 
         public TableDataFactoryTests(ITestOutputHelper outputHelperHelper) : base(outputHelperHelper) { }

@@ -7,19 +7,19 @@ namespace Rogero.FluentMigrator.Poco.Attributes
 {
     public class ForeignKeyRefAttribute : Attribute
     {
-        public Type?  PrimaryType       { get; set; }
-        public string PrimarySchemaName { get; }
-        public string PrimaryTableName  { get; }
-        public string PrimaryColumnName { get; }
-        public string ForeignKeyGroupId { get; }
-        public string ForeignKeyName    { get; }
-        public Rule   CascadeRule       { get; }
+        public Type?   PrimaryType       { get; set; }
+        public string  PrimarySchemaName { get; }
+        public string  PrimaryTableName  { get; }
+        public string  PrimaryColumnName { get; }
+        public string? ForeignKeyGroupId { get; }
+        public string? ForeignKeyName    { get; }
+        public Rule    CascadeRule       { get; }
 
-        public ForeignKeyRefAttribute(Type   type,
-                                      Rule   cascadeRule,
-                                      string propertyName,
-                                      string foreignKeyGroupId = null,
-                                      string foreignKeyName    = null)
+        public ForeignKeyRefAttribute(Type    type,
+                                      Rule    cascadeRule,
+                                      string  propertyName,
+                                      string? foreignKeyGroupId = null,
+                                      string? foreignKeyName    = null)
         {
             PrimaryType         = type;
             var (schema, table) = type.GetSchemaTableNames();
@@ -33,12 +33,12 @@ namespace Rogero.FluentMigrator.Poco.Attributes
         }
 
 
-        public ForeignKeyRefAttribute(string primarySchemaName,
-                                      string primaryTableName,
-                                      Rule   cascadeRule,
-                                      string propertyName,
-                                      string foreignKeyGroupId = null,
-                                      string foreignKeyName    = null)
+        public ForeignKeyRefAttribute(string  primarySchemaName,
+                                      string  primaryTableName,
+                                      Rule    cascadeRule,
+                                      string  propertyName,
+                                      string? foreignKeyGroupId = null,
+                                      string? foreignKeyName    = null)
         {
             PrimarySchemaName = primarySchemaName;
             PrimaryTableName  = primaryTableName;

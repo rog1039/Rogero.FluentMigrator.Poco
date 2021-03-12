@@ -9,14 +9,19 @@ namespace Rogero.FluentMigrator.Poco.Tests
     [Tags("Group1")]
     public class Migration1 : Migration
     {
+        public List<Type> Types { get; } = new()
+        {
+            typeof(Order2),
+            typeof(Customer),
+            typeof(OrderLine2),
+            typeof(OrderRelease2),
+            typeof(Part2),
+        };
+        
         public override void Up()
         {
-            var types   = new List<Type>() {typeof(Part2), typeof(Order2), typeof(OrderLine2), typeof(OrderRelease2)};
-            var configs = types.Select(TableDataFactory.CreateTableDataFromType);
-            foreach (var creationData in configs)
-            {
-                this.Apply(creationData);
-            }
+            var dbModel = DbModelFactory.GenerateModel(Types);
+            this.Apply(dbModel);
         }
 
         public override void Down()

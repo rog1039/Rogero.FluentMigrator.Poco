@@ -23,13 +23,13 @@ namespace Rogero.FluentMigrator.Poco
             
             var ident = IdentityInformation != null 
                 ? $", Ident (Seed:{IdentityInformation.Seed}, Increment:{IdentityInformation.Increment})" 
-                : String.Empty;
-            var primaryKey = PrimaryKeyInformation.IsPrimaryKey
+                : string.Empty;
+            var primaryKey = PrimaryKeyInformation?.IsPrimaryKey == true
                 ? $" | PK (true)" + ident
-                : String.Empty;
+                : string.Empty;
             var foreignKey = ForeignKeyInformation != null
                 ? $" | FK ({ForeignKeyInformation.ToString()})"
-                : String.Empty;
+                : string.Empty;
             var type = SqlTypeAttribute.ToSqlServerDefinitionWithNullable();
             return
                 $"{ColumnDataName.Name}: Type ({type})" +

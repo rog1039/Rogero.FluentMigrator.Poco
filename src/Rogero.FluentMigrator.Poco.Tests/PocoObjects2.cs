@@ -59,12 +59,13 @@ namespace Rogero.FluentMigrator.Poco.Tests
             resourceIdColumn.ForeignKeyInformation.PrimaryTableName.Should().Be("Production.Resource");
             resourceIdColumn.ForeignKeyInformation.PrimaryColumnNames.Should().Be("Id");
             
-            jobTable.ColumnCreationData[0].ColumnDataName.Name.Should().Be("Id");
-            jobTable.ColumnCreationData[0].PrimaryKeyInformation.IsPrimaryKey.Should().BeTrue();
-            jobTable.ColumnCreationData[0].IdentityInformation.Seed.Should().Be(1);
-            jobTable.ColumnCreationData[0].IdentityInformation.Increment.Should().Be(1);
-            
-            
+            resourceTable.ColumnCreationData[0].ColumnDataName.Name.Should().Be("Id");
+            resourceTable.ColumnCreationData[0].PrimaryKeyInformation.IsPrimaryKey.Should().BeTrue();
+            resourceTable.ColumnCreationData[0].IdentityInformation.Seed.Should().Be(1);
+            resourceTable.ColumnCreationData[0].IdentityInformation.Increment.Should().Be(1);
+
+            var rowVersionColumn = resourceTable.ColumnCreationData[1];
+            rowVersionColumn.SqlTypeAttribute.Should().BeOfType<RowVersionTypeAttribute>();
         }
 
         public Inferring_PocoObjects2_Tests(ITestOutputHelper outputHelperHelper) : base(outputHelperHelper) { }

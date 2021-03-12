@@ -10,15 +10,28 @@ namespace Rogero.FluentMigrator.Poco.Tests
         public MyDecimalSqlTypeAttribute() : base(38, 12) { }
     }
 
+    public record Customer
+    {
+        [PrimaryKey()]
+        [Identity()]
+        public int Id { get; set; }
+
+        [StringType(100)]
+        public string Name { get; set; }
+    }
+
     [TableName("Sales.Order")]
     public record Order2(
         [property: PrimaryKey] [property: Identity]
         int OrderNumber,
-        [property: StringType(200)]
-        string CustomerName,
-        [property: StringType(100)]
-        string? PONumber
-    );
+        [property: StringType(200)] string  CustomerName,
+        [property: StringType(100)] string? PONumber
+
+    )
+    {
+        [CascadeRule(Rule.None)]
+        public int CustomerId { get; set; }
+    }
 
     public record OrderLine2(
         [property: PrimaryKey] [property: ForeignKeyRef(typeof(Order2), Rule.Cascade, nameof(Order2.OrderNumber))]

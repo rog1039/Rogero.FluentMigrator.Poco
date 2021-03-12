@@ -8,5 +8,10 @@ namespace Rogero.FluentMigrator.Poco
         {
             return $"{Schema}.{Table}";
         }
+
+        public string ToStringBracketed()
+        {
+            return $"[{Schema}].[{Table}]";
+        }
     };
 }

@@ -28,6 +28,11 @@ namespace Rogero.FluentMigrator.Poco
                 PrimaryColumnNames);
         }
 
+        private MultiForeignKeyData()
+        {
+            
+        }
+
         public static List<MultiForeignKeyData> CreateFromForeignKeyDatas(
             IEnumerable<ColumnDataForeignKey> foreignKeyInformations)
         {

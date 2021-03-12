@@ -1,20 +1,51 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Rogero.Common.ExtensionMethods;
 using UniqueDb.ConnectionProvider;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Rogero.FluentMigrator.Poco.Tests.Runner
 {
+    public class RunMigrationsPreviewTest : UnitTestBaseWithConsoleRedirection
+    {
+        [Fact()]
+        [Trait("Category", "Instant")]
+        public async Task MigrateGroup1Preview()
+        {
+            var model         = DbModelFactory.GenerateModel(new Migration1().Types);
+            model.OutputTableDatas.PrintStringTable("Tables in Topological Order");
+            
+            //Also, let's do a spot check on the Quantity columns MyDecimalSqlTypeAttribute data type.
+            var orderLine2Table           = model.OutputTableDatas.Single(z => z.TableName.Table == nameof(OrderLine2));
+            var quantityColumn            = orderLine2Table.ColumnCreationData.Single(z => z.ColumnDataName.Name == nameof(OrderLine2.Quantity));
+            var myDecimalSqlTypeAttribute = quantityColumn.SqlTypeAttribute as MyDecimalSqlTypeAttribute;
+            myDecimalSqlTypeAttribute.Precision.Should().Be(38);
+            myDecimalSqlTypeAttribute.Scale.Should().Be(12);
+
+            //And now let's print out the migration.
+            var dbManipulator = new DbManipulator(null, new[]{"Group1"});
+            dbManipulator.ShowSql         = true;
+            dbManipulator.ShowElapsedTime = false;
+            dbManipulator.PreviewOnly     = true;
+            await dbManipulator.UpdateDatabase();
+        }
+
+        public RunMigrationsPreviewTest(ITestOutputHelper outputHelperHelper) : base(outputHelperHelper) { }
+    }
+    
     public class RunMigrationsTest : UnitTestBaseWithConsoleRedirection
     {
         private UniqueDbConnectionProvider? _scp;
 
         [Fact()]
         [Trait("Category", "Instant")]
-        public async Task MigrateGroup1()
+        public async Task MigrateGroup1AgainstActualServer()
         {
             var dbManipulator = new DbManipulator(_scp, new[]{"Group1"});
+            dbManipulator.ShowSql = true;
             await dbManipulator.CreateAndUpdateDatabase();
         }
 
@@ -22,8 +53,15 @@ namespace Rogero.FluentMigrator.Poco.Tests.Runner
         [Trait("Category", "Instant")]
         public async Task MigrateGroup2()
         {
-            var dbManipulator = new DbManipulator(_scp, new []{"Group2"});
-            await dbManipulator.CreateAndUpdateDatabase();
+            Func<Task> failCreatingDatabase = new Func<Task>(async () =>
+            {
+                var dbManipulator = new DbManipulator(_scp, new[] {"Group2"});
+                await dbManipulator.CreateAndUpdateDatabase();
+            });
+
+            failCreatingDatabase.Should()
+                .Throw<Exception>(
+                    $"This fails because FluentMigrator doesn't sequence operations in appropriate order. {nameof(DbModelFactory)} can help topologically sort create statements to prevent this.");
         }
 
         [Fact()]

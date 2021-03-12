@@ -139,7 +139,7 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
         public override string ToSqlServerDefinition() => $"xml";
     }
 
-    public class RowVersionType : SqlTypeAttributeBase
+    public class RowVersionTypeAttribute : SqlTypeAttributeBase
     {
         public override string ToSqlServerDefinition() => $"rowversion";
     }
