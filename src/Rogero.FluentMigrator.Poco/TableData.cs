@@ -48,8 +48,8 @@ namespace Rogero.FluentMigrator.Poco
                 var foreignColumnNames = multiForeignKey.ForeignColumnNames.StringJoin(",");
                 var primaryColumnNames = multiForeignKey.PrimaryColumnNames.StringJoin(",");
                 sb.Append("   ");
-                sb.AppendLine($"FK: ({foreignColumnNames}) -> " +
-                              $"{multiForeignKey.PrimarySchemaName}.{multiForeignKey.PrimaryTableName}.({primaryColumnNames})");
+                sb.AppendLine($"FK: [{multiForeignKey.GroupName}] ({foreignColumnNames}) -> " +
+                              $"{multiForeignKey.PrimarySchemaName}.{multiForeignKey.PrimaryTableName}.({primaryColumnNames}) [{multiForeignKey.GetForeignKeyName()}]");
             }
             return sb.ToString();
         }

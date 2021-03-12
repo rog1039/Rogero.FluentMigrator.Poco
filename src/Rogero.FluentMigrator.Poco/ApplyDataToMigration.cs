@@ -31,7 +31,7 @@ namespace Rogero.FluentMigrator.Poco
                     colExp2.Identity(seed, increment);
                 }
 
-                if (column.ForeignKeyInformation is { } fk)
+                if (column.ForeignKeyInformation is { } fk && fk.IsMultiKey == false)
                 {
                     colExp2
                         .ForeignKey(fk.GetForeignKeyName(),

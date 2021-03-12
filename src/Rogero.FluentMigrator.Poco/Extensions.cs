@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FluentMigrator.Builders.Update;
 using FluentMigrator.Infrastructure.Extensions;
 using Rogero.FluentMigrator.Poco.Attributes;
 
@@ -9,6 +11,29 @@ namespace Rogero.FluentMigrator.Poco
 {
     public static class Extensions
     {
+        public static T? SingleOrDefaultOfType<T>(this IEnumerable<Attribute> attributes) where T : Attribute
+        {
+            return attributes.WhereCanCastTo<T>().SingleOrDefault();
+            // return attributes.Select(z => z.GetType()).GetAssignableTo<T>().SingleOrDefault();
+        }
+        
+        public static IEnumerable<T> WhereCanCastTo<T>(this IEnumerable list)
+        {
+            foreach (var item in list)
+            {
+                if (item is T t) yield return t;
+            }
+        }
+
+        public static IEnumerable<T>? GetAssignableTo<T>(this IEnumerable<Type> attributes) where T: Attribute
+        {
+            return attributes.Where(z =>
+                {
+                    return (z as T) is not null;
+                })
+                .Cast<T>();
+        }
+
         public static T? GetAttributeAssignableTo<T>(this PropertyInfo propertyInfo) where T : Attribute
         {
             var attributes = propertyInfo.GetCustomAttributes();
@@ -65,6 +90,11 @@ namespace Rogero.FluentMigrator.Poco
             return attribute;
         }
 
+        public static bool IsNullableStruct(this Type type)
+        {
+            var isNullable = Nullable.GetUnderlyingType(type) != null;
+            return isNullable;
+        }
 
         public static bool IsNullable(this Type type)
         {
@@ -72,10 +102,13 @@ namespace Rogero.FluentMigrator.Poco
             if (isNullable) return true;
 
             //Check nullable attribute: https://github.com/dotnet/roslyn/blob/master/docs/features/nullable-metadata.md
-            var attribute = type.GetAttributeSingleOrDefault("NullableAttribute", true);
-            if (attribute != null) return true;
+            return HasNullableAttribute(type);
+        }
 
-            return false;
+        public static bool HasNullableAttribute(this Type type)
+        {
+            var attribute = type.GetAttributeSingleOrDefault("NullableAttribute", true);
+            return attribute != null;
         }
 
         public static SchemaTableNames GetSchemaTableNames(this Type type)

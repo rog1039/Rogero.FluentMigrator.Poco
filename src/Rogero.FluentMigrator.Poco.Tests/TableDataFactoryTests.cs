@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rogero.Common.ExtensionMethods;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,6 +25,8 @@ namespace Rogero.FluentMigrator.Poco.Tests
                 .ToList();
 
             tableDatas.ForEach(tableData => Console.WriteLine(tableData.ToString()));
+
+            tableDatas.ForEach(tableData => tableData.ColumnCreationData.PrintStringTable());
         }
 
         public TableDataFactoryTests(ITestOutputHelper outputHelperHelper) : base(outputHelperHelper) { }

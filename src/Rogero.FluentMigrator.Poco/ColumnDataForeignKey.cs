@@ -13,11 +13,14 @@ namespace Rogero.FluentMigrator.Poco
         string PrimaryColumnNames,
         Rule   CascadeDeleteRule)
     {
-        public string GroupId { get; set; } = String.Empty;
+        public string GroupId    { get; set; } = String.Empty;
+        public bool   IsMultiKey  => !string.IsNullOrWhiteSpace(GroupId);
 
         public override string ToString()
         {
-            return $"{PrimarySchemaName}.{PrimaryTableName}.{PrimaryColumnNames} ({CascadeDeleteRule})";
+            var prefix = IsMultiKey ? "*MK* " : String.Empty;
+            var suffix = IsMultiKey ? $" [{GroupId}]" : String.Empty;
+            return $"{prefix}{PrimarySchemaName}.{PrimaryTableName}.{PrimaryColumnNames} ({CascadeDeleteRule}){suffix}";
         }
 
         public string GetForeignKeyName()

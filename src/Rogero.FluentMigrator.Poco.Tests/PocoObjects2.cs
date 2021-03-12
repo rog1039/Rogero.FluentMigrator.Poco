@@ -30,7 +30,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
     public class Inferring_PocoObjects2_Tests : UnitTestBaseWithConsoleRedirection
     {
         [Fact]
-        public void InferPrimaryKeyInfo()
+        public void ConventionsTest()
         {
             var types = new List<Type>()
             {

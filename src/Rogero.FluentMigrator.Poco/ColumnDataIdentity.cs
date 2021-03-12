@@ -16,5 +16,10 @@ namespace Rogero.FluentMigrator.Poco
             seed      = Seed;
             increment = Increment;
         }
+
+        public override string ToString()
+        {
+            return $"Seed: {Seed}, Inc: {Increment}";
+        }
     }
 }

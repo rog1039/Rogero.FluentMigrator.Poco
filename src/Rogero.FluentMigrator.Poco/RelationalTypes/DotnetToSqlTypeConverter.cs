@@ -24,8 +24,17 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
 
         public static SqlTypeAttributeBase Convert(Type propertyType)
         {
+            var isNullableStruct = propertyType.IsNullableStruct();
+            
+            propertyType = isNullableStruct
+                ? Nullable.GetUnderlyingType(propertyType)
+                : propertyType;
+
+            var hasNullableAttribute = propertyType.HasNullableAttribute();
+            
             if (DotnetSqlTypeAttributeMap.TryGetValue(propertyType, out var sqlTypeAttribute))
             {
+                sqlTypeAttribute.AllowNull = (isNullableStruct || hasNullableAttribute);
                 return sqlTypeAttribute;
             }
 

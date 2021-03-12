@@ -30,7 +30,7 @@ namespace Rogero.FluentMigrator.Poco
             var foreignKey = ForeignKeyInformation != null
                 ? $" | FK ({ForeignKeyInformation.ToString()})"
                 : String.Empty;
-            var type = SqlTypeAttribute.ToSqlServerDefinition();
+            var type = SqlTypeAttribute.ToSqlServerDefinitionWithNullable();
             return
                 $"{ColumnDataName.Name}: Type ({type})" +
                 primaryKey +

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Reflection;
 using FluentMigrator.Infrastructure.Extensions;
@@ -11,14 +12,16 @@ namespace Rogero.FluentMigrator.Poco
     {
         public static ColumnData GetInfo(TableData tableData, PropertyInfo propertyInfo)
         {
-            var columnNameInformation = GetColumnName(tableData, propertyInfo);
+            var propertyAttributes    = propertyInfo.GetCustomAttributes();
+            
+            var columnNameInformation = GetColumnName(tableData, propertyInfo, propertyAttributes);
             var columnData            = new ColumnData(columnNameInformation);
 
-            columnData.SqlTypeAttribute       = GetSqlTypeAttribute(tableData, columnData, propertyInfo);
-            columnData.PrimaryKeyInformation  = GetPrimaryKeyInfo(tableData, columnData, propertyInfo);
-            columnData.IdentityInformation    = GetIdentityInfo(tableData, columnData, propertyInfo);
-            columnData.ForeignKeyInformation  = GetForeignKeyInfo(tableData, propertyInfo);
-            columnData.CascadeRuleInformation = GetCascadeRuleInfo(tableData, propertyInfo);
+            columnData.SqlTypeAttribute       = GetSqlTypeAttribute(tableData, columnData, propertyInfo, propertyAttributes);
+            columnData.PrimaryKeyInformation  = GetPrimaryKeyInfo(tableData, columnData, propertyInfo, propertyAttributes);
+            columnData.IdentityInformation    = GetIdentityInfo(tableData, columnData, propertyInfo, propertyAttributes);
+            columnData.ForeignKeyInformation  = GetForeignKeyInfo(tableData, propertyInfo, propertyAttributes);
+            columnData.CascadeRuleInformation = GetCascadeRuleInfo(tableData, propertyInfo, propertyAttributes);
 
             return columnData;
         }
@@ -31,16 +34,20 @@ namespace Rogero.FluentMigrator.Poco
                 : new ColumnDataName(propertyInfo.Name);
         }
 
-        private static ColumnDataName GetColumnName(TableData    tableData,
-                                                    PropertyInfo propertyInfo)
+        private static ColumnDataName GetColumnName(TableData              tableData,
+                                                    PropertyInfo           propertyInfo,
+                                                    IEnumerable<Attribute> propertyAttributes)
         {
             return GetColumnName(propertyInfo);
         }
 
-        private static SqlTypeAttributeBase GetSqlTypeAttribute(TableData    tableData, ColumnData columnData,
-                                                                PropertyInfo propertyInfo)
+        private static SqlTypeAttributeBase GetSqlTypeAttribute(TableData              tableData, 
+                                                                ColumnData             columnData,
+                                                                PropertyInfo           propertyInfo,
+                                                                IEnumerable<Attribute> propertyAttributes)
         {
-            var sqlTypeAttribute = propertyInfo.GetAttributeAssignableTo<SqlTypeAttributeBase>();
+            var sqlTypeAttribute = propertyAttributes.SingleOrDefaultOfType<SqlTypeAttributeBase>();
+            
             if (sqlTypeAttribute != null) return sqlTypeAttribute;
 
             var columnNameIsRowVersion = string.Equals(columnData.ColumnDataName.Name, "rowversion",
@@ -54,9 +61,10 @@ namespace Rogero.FluentMigrator.Poco
             return DotnetToSqlTypeConverter.Convert(propertyInfo.PropertyType);
         }
 
-        private static ColumnDataPrimaryKey GetPrimaryKeyInfo(TableData    tableData,
-                                                              ColumnData   columnData,
-                                                              PropertyInfo propertyInfo)
+        private static ColumnDataPrimaryKey GetPrimaryKeyInfo(TableData              tableData,
+                                                              ColumnData             columnData,
+                                                              PropertyInfo           propertyInfo,
+                                                              IEnumerable<Attribute> propertyAttributes)
         {
             var isNameId = string.Equals("Id", propertyInfo.Name, StringComparison.InvariantCultureIgnoreCase);
             if (isNameId) return new ColumnDataPrimaryKey(true);
@@ -67,9 +75,10 @@ namespace Rogero.FluentMigrator.Poco
                 : new ColumnDataPrimaryKey(false);
         }
 
-        private static ColumnDataIdentity? GetIdentityInfo(TableData    tableData,
-                                                           ColumnData   columnData,
-                                                           PropertyInfo propertyInfo)
+        private static ColumnDataIdentity? GetIdentityInfo(TableData              tableData,
+                                                           ColumnData             columnData,
+                                                           PropertyInfo           propertyInfo,
+                                                           IEnumerable<Attribute> propertyAttributes)
         {
             var identityAttribute = propertyInfo.GetOneAttribute<IdentityAttribute>();
             if (identityAttribute != null)
@@ -89,8 +98,9 @@ namespace Rogero.FluentMigrator.Poco
                 : null;
         }
 
-        private static ColumnDataForeignKey? GetForeignKeyInfo(TableData    tableData,
-                                                               PropertyInfo propertyInfo)
+        private static ColumnDataForeignKey? GetForeignKeyInfo(TableData              tableData,
+                                                               PropertyInfo           propertyInfo,
+                                                               IEnumerable<Attribute> propertyAttributes)
         {
             var fkAttribute = propertyInfo.GetOneAttribute<ForeignKeyRefAttribute>();
             if (fkAttribute == null) return null;
@@ -135,11 +145,12 @@ namespace Rogero.FluentMigrator.Poco
                 tableData.AddForeignKeyPart(fkInfo);
                 //We are returning null since this property/column alone does not provide all the information and we do not
                 //wish to apply a foreign key configuration from this info alone. Need the other parts from other column/props.
-                return null;
+                return fkInfo;
             }
         }
 
-        private static ColumnDataCascadeRule? GetCascadeRuleInfo(TableData tableData, PropertyInfo propertyInfo)
+        private static ColumnDataCascadeRule? GetCascadeRuleInfo(TableData tableData, PropertyInfo propertyInfo,
+                                                                 IEnumerable<Attribute> propertyAttributes)
         {
             var cascadeRuleAttribute = propertyInfo.GetOneAttribute<CascadeRuleAttribute>();
             return cascadeRuleAttribute != null

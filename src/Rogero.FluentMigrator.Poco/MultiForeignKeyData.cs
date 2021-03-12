@@ -8,6 +8,7 @@ namespace Rogero.FluentMigrator.Poco
 {
     public class MultiForeignKeyData
     {
+        public string        GroupName  { get; set; }
         public string        ForeignSchemaName  { get; set; }
         public string        ForeignTableName   { get; set; }
         public IList<string> ForeignColumnNames { get; set; }
@@ -45,6 +46,7 @@ namespace Rogero.FluentMigrator.Poco
 
                 var multiForeignKey = new MultiForeignKeyData()
                 {
+                    GroupName = fk.GroupId,
                     ForeignSchemaName  = fk.ForeignSchemaName,
                     ForeignTableName   = fk.ForeignTableName,
                     ForeignColumnNames = foreignColumns,
