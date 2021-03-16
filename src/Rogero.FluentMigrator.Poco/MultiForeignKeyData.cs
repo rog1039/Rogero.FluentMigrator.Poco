@@ -34,9 +34,9 @@ namespace Rogero.FluentMigrator.Poco
         }
 
         public static List<MultiForeignKeyData> CreateFromForeignKeyDatas(
-            IEnumerable<ColumnDataForeignKey> foreignKeyInformations)
+            IEnumerable<ColumnDataForeignKey> foreignKeyParts)
         {
-            var groupedFks = foreignKeyInformations
+            var groupedFks = foreignKeyParts
                 .GroupBy(z => z.GroupId)
                 .ToList();
 

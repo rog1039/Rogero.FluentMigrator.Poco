@@ -12,7 +12,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
         public List<Type> Types { get; } = new()
         {
             typeof(Order2),
-            typeof(Customer),
+            typeof(Customer2),
             typeof(OrderLine2),
             typeof(OrderRelease2),
             typeof(Part2),

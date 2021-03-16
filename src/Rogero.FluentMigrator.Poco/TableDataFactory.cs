@@ -16,6 +16,7 @@ namespace Rogero.FluentMigrator.Poco
                 .Select(prop => ColumnDataFactory.GetInfo(tableCreationData, prop))
                 .ToList();
             tableCreationData.ColumnCreationData.AddRange(columnCreationDatas);
+            tableCreationData.BuildMultiForeignKeys();
             return tableCreationData;
         }
 

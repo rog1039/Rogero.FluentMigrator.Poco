@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Rogero.FluentMigrator.Poco
@@ -20,16 +21,29 @@ namespace Rogero.FluentMigrator.Poco
             columns = ColumnCreationData;
         }
 
-        public void AddForeignKeyPart(ColumnDataForeignKey fkInfo)
+        public void FinishForeignKeys()
         {
-            ForeignKeyParts.Add(fkInfo);
-            BuildForeignKeyComplete();
+            FillOutForeignPartsOfForeignKeys();
+            BuildMultiForeignKeys();
         }
 
-        private void BuildForeignKeyComplete()
+        /// <summary>
+        /// This basically fills out the foreign schema/table names in each foreign key ref.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        private void FillOutForeignPartsOfForeignKeys()
         {
+            throw new NotImplementedException();
+        }
+
+        public void BuildMultiForeignKeys()
+        {
+            var foreignKeyParts = ColumnCreationData
+                .Where(z => z.ForeignKeyInformation?.IsMultiKey == true)
+                .Select(z => z.ForeignKeyInformation!)
+                .ToList();
+            var multiForeignKeys = MultiForeignKeyData.CreateFromForeignKeyDatas(foreignKeyParts);
             MultiForeignKeys.Clear();
-            var multiForeignKeys = MultiForeignKeyData.CreateFromForeignKeyDatas(ForeignKeyParts);
             MultiForeignKeys.AddRange(multiForeignKeys);
         }
 

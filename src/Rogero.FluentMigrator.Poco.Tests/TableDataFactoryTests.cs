@@ -14,6 +14,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
         {
             var types = new List<Type>()
             {
+                typeof(Customer2),
                 typeof(Order2), 
                 typeof(OrderLine2),
                 typeof(OrderRelease2), 

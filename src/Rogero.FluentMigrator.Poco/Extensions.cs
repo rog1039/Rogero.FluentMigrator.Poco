@@ -11,10 +11,14 @@ namespace Rogero.FluentMigrator.Poco
 {
     public static class Extensions
     {
+        public static T? SingleOrDefaultAttribute<T>(this Type type) where T : Attribute
+        {
+            var attributes = type.GetCustomAttributes<T>();
+            return attributes.SingleOrDefault();
+        }
         public static T? SingleOrDefaultOfType<T>(this IEnumerable<Attribute> attributes) where T : Attribute
         {
             return attributes.WhereCanCastTo<T>().SingleOrDefault();
-            // return attributes.Select(z => z.GetType()).GetAssignableTo<T>().SingleOrDefault();
         }
         
         public static IEnumerable<T> WhereCanCastTo<T>(this IEnumerable list)
@@ -46,7 +50,7 @@ namespace Rogero.FluentMigrator.Poco
         
         public static bool IsNotNullOrWhitespace(this string s) => !IsNullOrWhitespace(s);
 
-        public static bool IsNullOrWhitespace(this string s)
+        public static bool IsNullOrWhitespace(this string? s)
         {
             return string.IsNullOrWhiteSpace(s);
         }

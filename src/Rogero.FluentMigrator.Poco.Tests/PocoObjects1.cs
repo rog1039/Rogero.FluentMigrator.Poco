@@ -10,7 +10,8 @@ namespace Rogero.FluentMigrator.Poco.Tests
         public MyDecimalSqlTypeAttribute() : base(38, 12) { }
     }
 
-    public record Customer
+    [TableName("Customer")]
+    public record Customer2
     {
         [PrimaryKey()]
         [Identity()]
@@ -29,7 +30,7 @@ namespace Rogero.FluentMigrator.Poco.Tests
 
     )
     {
-        [CascadeRule(Rule.None)]
+        [ForeignKeyRef(typeof(Customer2), Rule.Cascade)]
         public int CustomerId { get; set; }
     }
 

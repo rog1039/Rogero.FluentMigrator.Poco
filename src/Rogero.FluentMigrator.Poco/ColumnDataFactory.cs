@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
+using System.Linq;
 using System.Reflection;
 using FluentMigrator.Infrastructure.Extensions;
 using Rogero.FluentMigrator.Poco.Attributes;
@@ -12,15 +12,15 @@ namespace Rogero.FluentMigrator.Poco
     {
         public static ColumnData GetInfo(TableData tableData, PropertyInfo propertyInfo)
         {
-            var propertyAttributes    = propertyInfo.GetCustomAttributes();
-            
-            var columnNameInformation = GetColumnName(tableData, propertyInfo, propertyAttributes);
+            var propertyAttributes = propertyInfo.GetCustomAttributes().ToList();
+
+            var columnNameInformation = GetColumnName(propertyInfo);
             var columnData            = new ColumnData(columnNameInformation);
 
-            columnData.SqlTypeAttribute       = GetSqlTypeAttribute(tableData, columnData, propertyInfo, propertyAttributes);
-            columnData.PrimaryKeyInformation  = GetPrimaryKeyInfo(tableData, columnData, propertyInfo, propertyAttributes);
-            columnData.IdentityInformation    = GetIdentityInfo(tableData, columnData, propertyInfo, propertyAttributes);
-            columnData.ForeignKeyInformation  = GetForeignKeyInfo(tableData, propertyInfo, propertyAttributes);
+            columnData.SqlTypeAttribute       = GetSqlTypeAttribute(columnData, propertyInfo);
+            columnData.PrimaryKeyInformation  = GetPrimaryKeyInfo(propertyInfo);
+            columnData.IdentityInformation    = GetIdentityInfo(columnData, propertyInfo);
+            columnData.ForeignKeyInformation  = GetForeignKeyInfo(tableData, propertyInfo);
             columnData.CascadeRuleInformation = GetCascadeRuleInfo(tableData, propertyInfo, propertyAttributes);
 
             return columnData;
@@ -34,79 +34,50 @@ namespace Rogero.FluentMigrator.Poco
                 : new ColumnDataName(propertyInfo.Name);
         }
 
-        private static ColumnDataName GetColumnName(TableData              tableData,
-                                                    PropertyInfo           propertyInfo,
-                                                    IEnumerable<Attribute> propertyAttributes)
+        private static SqlTypeAttributeBase GetSqlTypeAttribute(ColumnData   columnData,
+                                                                PropertyInfo propertyInfo)
         {
-            return GetColumnName(propertyInfo);
-        }
+            var sqlTypeAttribute = propertyInfo.GetCustomAttributes<SqlTypeAttributeBase>().SingleOrDefault();
 
-        private static SqlTypeAttributeBase GetSqlTypeAttribute(TableData              tableData, 
-                                                                ColumnData             columnData,
-                                                                PropertyInfo           propertyInfo,
-                                                                IEnumerable<Attribute> propertyAttributes)
-        {
-            var sqlTypeAttribute = propertyAttributes.SingleOrDefaultOfType<SqlTypeAttributeBase>();
-            
             if (sqlTypeAttribute != null) return sqlTypeAttribute;
 
             var columnNameIsRowVersion = string.Equals(columnData.ColumnDataName.Name, "rowversion",
-                                                  StringComparison.InvariantCultureIgnoreCase);
-            
+                                                       StringComparison.InvariantCultureIgnoreCase);
+
             var propertyNameIsRowVersion = string.Equals(propertyInfo.Name, "rowversion",
-                                                  StringComparison.InvariantCultureIgnoreCase);
+                                                         StringComparison.InvariantCultureIgnoreCase);
 
             if (columnNameIsRowVersion || propertyNameIsRowVersion) return new RowVersionTypeAttribute();
 
             return DotnetToSqlTypeConverter.Convert(propertyInfo.PropertyType);
         }
 
-        private static ColumnDataPrimaryKey GetPrimaryKeyInfo(TableData              tableData,
-                                                              ColumnData             columnData,
-                                                              PropertyInfo           propertyInfo,
-                                                              IEnumerable<Attribute> propertyAttributes)
+        public static ColumnDataPrimaryKey GetPrimaryKeyInfo(PropertyInfo propertyInfo)
         {
             var isNameId = string.Equals("Id", propertyInfo.Name, StringComparison.InvariantCultureIgnoreCase);
             if (isNameId) return new ColumnDataPrimaryKey(true);
-            
+
             var primaryKeyAttribute = propertyInfo.GetOneAttribute<PrimaryKeyAttribute>();
             return primaryKeyAttribute != null
                 ? new ColumnDataPrimaryKey(primaryKeyAttribute.IsPrimaryKey)
                 : new ColumnDataPrimaryKey(false);
         }
 
-        private static ColumnDataIdentity? GetIdentityInfo(TableData              tableData,
-                                                           ColumnData             columnData,
-                                                           PropertyInfo           propertyInfo,
-                                                           IEnumerable<Attribute> propertyAttributes)
+        private static ColumnDataIdentity? GetIdentityInfo(ColumnData   columnData,
+                                                           PropertyInfo propertyInfo)
         {
             var identityAttribute = propertyInfo.GetOneAttribute<IdentityAttribute>();
             if (identityAttribute != null)
                 return new ColumnDataIdentity(identityAttribute.Seed, identityAttribute.Increment);
 
             /*
-             * Here we used to do some inferring to decide if we should auto-enable Identity(1,1) on this column.
-             * We were pretty broad, just being a PK and an Int16/32/64 would qualify you as Identity(1,1).
-             * Since you can only have 1 Identity column per table this resulted in invalid sql create table statements.
-             * So, now we don't do this.
-             *
-             *
-            if (isColumnPrimaryKey && isColumnAnInt)
-            {
-                return new ColumnDataIdentity(1, 1);
-            }
-            
-            return identityAttribute != null
-                ? new ColumnDataIdentity(identityAttribute.Seed, identityAttribute.Increment)
-                : null;
-             *
              * Now you must be: PK, Int16/32/64, & have name == Id;
              */
             var isColumnPrimaryKey = columnData.PrimaryKeyInformation?.IsPrimaryKey == true;
             var isColumnAnInt = columnData.SqlTypeAttribute is Int16TypeAttribute
                              || columnData.SqlTypeAttribute is Int32TypeAttribute
                              || columnData.SqlTypeAttribute is Int64TypeAttribute;
-            var isColumnNamedId = string.Equals(columnData.ColumnDataName.Name, 
+            var isColumnNamedId = string.Equals(columnData.ColumnDataName.Name,
                                                 "id",
                                                 StringComparison.OrdinalIgnoreCase);
 
@@ -116,25 +87,14 @@ namespace Rogero.FluentMigrator.Poco
                 : null;
         }
 
-        private static ColumnDataForeignKey? GetForeignKeyInfo(TableData              tableData,
-                                                               PropertyInfo           propertyInfo,
-                                                               IEnumerable<Attribute> propertyAttributes)
+        private static ColumnDataForeignKey? GetForeignKeyInfo(TableData    tableData,
+                                                               PropertyInfo propertyInfo)
         {
-            var fkAttribute = propertyInfo.GetOneAttribute<ForeignKeyRefAttribute>();
-            if (fkAttribute == null) return null;
+            var fkRefAttribute = propertyInfo.GetOneAttribute<ForeignKeyRefAttribute>();
+            if (fkRefAttribute == null) return null;
 
-            /*
-             * Start with unprocessed Primary column name.
-             */
-            var primaryColumnName = fkAttribute.PrimaryColumnName;
-            if (fkAttribute.PrimaryType != null)
-            {
-                //If we have a primary type specified, then look at the property and extract the proper column name
-                //if it is present.
-                var property   = fkAttribute.PrimaryType.GetProperty(primaryColumnName);
-                var columnName = GetColumnName(propertyInfo);
-                primaryColumnName = columnName.Name;
-            }
+            var primaryColumnRefType = GetPrimaryColumnRefType(fkRefAttribute);
+            var primaryColumnName = GetPrimaryColumnName(primaryColumnRefType, fkRefAttribute, propertyInfo);
 
             var (foreignSchema, foreignTable) = tableData.TableName;
             var foreignColumnName = GetColumnName(propertyInfo).Name;
@@ -142,29 +102,71 @@ namespace Rogero.FluentMigrator.Poco
             var fkInfo = new ColumnDataForeignKey(foreignSchema,
                                                   foreignTable,
                                                   foreignColumnName,
-                                                  fkAttribute.PrimarySchemaName,
-                                                  fkAttribute.PrimaryTableName,
+                                                  fkRefAttribute.PrimarySchemaName,
+                                                  fkRefAttribute.PrimaryTableName,
                                                   primaryColumnName,
-                                                  fkAttribute.CascadeRule);
+                                                  fkRefAttribute.CascadeRule);
+            
+            fkInfo.GroupId = fkRefAttribute.ForeignKeyGroupId;
+            return fkInfo;
+        }
 
-            //Single column foreign key.
-            if (fkAttribute.ForeignKeyGroupId.IsNullOrWhitespace())
+        private static string GetPrimaryColumnName(PrimaryColumnRefType   primaryColumnRefType,
+                                                   ForeignKeyRefAttribute fkRefAttribute,
+                                                   PropertyInfo           propertyInfo)
+        {
+            switch (primaryColumnRefType)
             {
-                return fkInfo;
+                case PrimaryColumnRefType.Nothing:
+                    /*
+                     * In this case, our attribute is somthing like FKAttribute(CascadeRule.Cascade)
+                     * We will take this to mean that the name of the column this attribute is attached to
+                     * shares the same name as the primary key column.
+                     */
+                    return GetColumnName(propertyInfo).Name;
+                
+                case PrimaryColumnRefType.ColumnNameProvided:
+                    return fkRefAttribute.PrimaryColumnName;
+                
+                case PrimaryColumnRefType.PropertyNameProvided when fkRefAttribute.PrimaryType is not null:
+                    var property   = fkRefAttribute.PrimaryType.GetProperty(fkRefAttribute.PrimaryColumnName);
+                    if (property is null)
+                        throw new Exception(
+                            $"No matching property found ({fkRefAttribute.PrimaryColumnName} on primary type: {fkRefAttribute.PrimaryType.FullName}");
+                    var columnName = GetColumnName(property);
+                    return columnName.Name;
+                
+                case PrimaryColumnRefType.PrimaryTypeOnlyProvided when fkRefAttribute.PrimaryType is not null:
+                    var primaryKey = fkRefAttribute.GetMatchingPrimaryKey();
+                    if (primaryKey.IsNullOrWhitespace())
+                        throw new Exception(
+                            $"Could not find a matching primary key on the primary type: {fkRefAttribute.PrimaryType.FullName}");
+                    return primaryKey;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(primaryColumnRefType), primaryColumnRefType, null);
             }
-            else
+        }
+
+        public static PrimaryColumnRefType GetPrimaryColumnRefType(ForeignKeyRefAttribute fkRef)
+        {
+            var hasPrimaryType       = fkRef.PrimaryType != null;
+            var hasPrimaryColumnText = fkRef.PrimaryColumnName.IsNotNullOrWhitespace();
+            return (hasPrimaryType, hasPrimaryColumnText) switch
             {
-                /*
-                 * This fk attribute is a part of a group which means this attribute only holds part of the data. We need to
-                 * pass this fk attribute up to the parent object and let it combine the other fk attributes as necessary together
-                 * to determine the final fk configuration.
-                 */
-                fkInfo.GroupId = fkAttribute.ForeignKeyGroupId;
-                tableData.AddForeignKeyPart(fkInfo);
-                //We are returning null since this property/column alone does not provide all the information and we do not
-                //wish to apply a foreign key configuration from this info alone. Need the other parts from other column/props.
-                return fkInfo;
-            }
+                (false, false) => PrimaryColumnRefType.Nothing,
+                (false, true)  => PrimaryColumnRefType.ColumnNameProvided,
+                (true, false)  => PrimaryColumnRefType.PrimaryTypeOnlyProvided,
+                (true, true)   => PrimaryColumnRefType.PropertyNameProvided,
+            };
+        }
+
+        public enum PrimaryColumnRefType
+        {
+            Nothing,
+            ColumnNameProvided,
+            PropertyNameProvided,
+            PrimaryTypeOnlyProvided,
         }
 
         private static ColumnDataCascadeRule? GetCascadeRuleInfo(TableData tableData, PropertyInfo propertyInfo,
@@ -174,7 +176,6 @@ namespace Rogero.FluentMigrator.Poco
             return cascadeRuleAttribute != null
                 ? new ColumnDataCascadeRule(cascadeRuleAttribute.CascadeRule)
                 : null;
-
         }
     }
 }
