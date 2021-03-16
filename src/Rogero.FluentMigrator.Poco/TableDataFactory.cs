@@ -12,7 +12,7 @@ namespace Rogero.FluentMigrator.Poco
             var tableName         = GetTableName(type);
             var tableCreationData = new TableData() {TableName = tableName, SourceType=type};
             var columnCreationDatas = type
-                .GetProperties()
+                .GetBasePropertiesFirst()
                 .Select(prop => ColumnDataFactory.GetInfo(tableCreationData, prop))
                 .ToList();
             tableCreationData.ColumnCreationData.AddRange(columnCreationDatas);
