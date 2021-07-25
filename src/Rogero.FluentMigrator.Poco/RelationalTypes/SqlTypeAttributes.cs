@@ -36,6 +36,7 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
                 (false, false) => $"nvarchar({Length.ToSqlLength()})",
             };
         }
+
     }
 
     public class Int32TypeAttribute : SqlTypeAttributeBase

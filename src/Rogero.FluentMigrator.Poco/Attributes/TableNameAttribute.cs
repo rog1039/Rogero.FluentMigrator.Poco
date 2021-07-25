@@ -24,4 +24,6 @@ namespace Rogero.FluentMigrator.Poco.Attributes
             CascadeRule = cascadeRule;
         }
     }
+
+    public class IgnoreForMappingAttribute:Attribute{}
 }

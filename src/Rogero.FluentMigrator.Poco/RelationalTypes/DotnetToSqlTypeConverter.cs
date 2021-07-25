@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Rogero.Common.ExtensionMethods;
 
 namespace Rogero.FluentMigrator.Poco.RelationalTypes
 {
     public static class DotnetToSqlTypeConverter
     {
-        private static readonly Dictionary<Type, SqlTypeAttributeBase> DotnetSqlTypeAttributeMap = new()
+        private static readonly Dictionary<Type, Func<SqlTypeAttributeBase>> DotnetSqlTypeAttributeMap = new()
         {
-            {typeof(string), new StringTypeAttribute()},
-            {typeof(short), new Int16TypeAttribute()},
-            {typeof(int), new Int32TypeAttribute()},
-            {typeof(long), new Int64TypeAttribute()},
-            {typeof(bool), new BoolTypeAttribute()},
-            {typeof(byte[]), new BinaryTypeAttribute(int.MaxValue)},
-            {typeof(byte), new BinaryTypeAttribute(1)},
-            {typeof(decimal), new DecimalTypeAttribute(38, 12)},
-            {typeof(DateTime), new DateTime2TypeAttribute()},
-            {typeof(DateTimeOffset), new DateTimeOffsetTypeAttribute()},
-            {typeof(double), new DoubleTypeAttribute()},
-            {typeof(Guid), new GuidTypeAttribute()},
-            {typeof(float), new FloatTypeAttribute()},
+            {typeof(string),()=> new StringTypeAttribute()},
+            {typeof(short), ()=> new Int16TypeAttribute()},
+            {typeof(int), ()=> new Int32TypeAttribute()},
+            {typeof(long), ()=> new Int64TypeAttribute()},
+            {typeof(bool), ()=> new BoolTypeAttribute()},
+            {typeof(byte[]), ()=> new BinaryTypeAttribute(int.MaxValue)},
+            {typeof(byte), ()=> new BinaryTypeAttribute(1)},
+            {typeof(decimal), ()=> new DecimalTypeAttribute(38, 12)},
+            {typeof(DateTime), ()=> new DateTime2TypeAttribute()},
+            {typeof(DateTimeOffset),()=>  new DateTimeOffsetTypeAttribute()},
+            {typeof(double), ()=> new DoubleTypeAttribute()},
+            {typeof(Guid), ()=> new GuidTypeAttribute()},
+            {typeof(float), ()=> new FloatTypeAttribute()},
         };
 
         public static SqlTypeAttributeBase Convert(Type propertyType)
@@ -32,9 +34,30 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
 
             var hasNullableAttribute = propertyType.HasNullableAttribute();
             
-            if (DotnetSqlTypeAttributeMap.TryGetValue(propertyType, out var sqlTypeAttribute))
+            if (DotnetSqlTypeAttributeMap.TryGetValue(propertyType, out var sqlTypeAttributeFunc))
             {
+                var sqlTypeAttribute = sqlTypeAttributeFunc();
                 sqlTypeAttribute.AllowNull = (isNullableStruct || hasNullableAttribute);
+                return sqlTypeAttribute;
+            }
+
+            throw new NotImplementedException(
+                $"No automatic conversion from dotnet type: {propertyType.Name} to SQL Type.");
+        }
+
+        public static SqlTypeAttributeBase Convert(PropertyInfo propertyInfo)
+        {
+            var isNullable       = propertyInfo.IsNullable();
+            var isNullableStruct = propertyInfo.PropertyType.IsNullableStruct();
+
+            var propertyType = isNullableStruct
+                ? Nullable.GetUnderlyingType(propertyInfo.PropertyType)
+                : propertyInfo.PropertyType;
+            
+            if (DotnetSqlTypeAttributeMap.TryGetValue(propertyType, out var sqlTypeAttributeFunc))
+            {
+                var sqlTypeAttribute = sqlTypeAttributeFunc();
+                sqlTypeAttribute.AllowNull = isNullable;
                 return sqlTypeAttribute;
             }
 

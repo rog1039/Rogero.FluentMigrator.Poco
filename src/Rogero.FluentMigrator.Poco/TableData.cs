@@ -51,11 +51,12 @@ namespace Rogero.FluentMigrator.Poco
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Table: {TableName}");
-            foreach (var column in ColumnCreationData)
-            {
-                sb.Append("   ");
-                sb.AppendLine(column.ToString());
-            }
+            sb.AppendLine(ColumnCreationData.ToStringTable());
+            // foreach (var column in ColumnCreationData)
+            // {
+            //     sb.Append("   ");
+            //     sb.AppendLine(column.ToString());
+            // }
 
             foreach (var multiForeignKey in MultiForeignKeys)
             {

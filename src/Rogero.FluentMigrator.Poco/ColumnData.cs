@@ -32,7 +32,7 @@ namespace Rogero.FluentMigrator.Poco
                 : string.Empty;
             var type = SqlTypeAttribute.ToSqlServerDefinitionWithNullable();
             return
-                $"{ColumnDataName.Name}: Type ({type})" +
+                $"{ColumnDataName.Name}: ({type})" +
                 primaryKey +
                 foreignKey;
         }

@@ -14,6 +14,7 @@ namespace Rogero.FluentMigrator.Poco
             var columnCreationDatas = type
                 .GetBasePropertiesFirst()
                 .Select(prop => ColumnDataFactory.GetInfo(tableCreationData, prop))
+                .Where(z => z is not null)
                 .ToList();
             tableCreationData.ColumnCreationData.AddRange(columnCreationDatas);
             tableCreationData.BuildMultiForeignKeys();

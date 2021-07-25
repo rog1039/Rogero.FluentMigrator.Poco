@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogero.FluentMigrator.Poco"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniqueDb.ConnectionProvider", "..\..\UniqueDb.ConnectionProvider\src\UniqueDb.ConnectionProvider\UniqueDb.ConnectionProvider.csproj", "{3491B06C-3327-4F28-8F3B-A284CDFDC99C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogero.Common", "..\..\Rogero.Common\src\Rogero.Common\Rogero.Common\Rogero.Common.csproj", "{CEA58768-4FDF-4DFB-BA9C-2524B6D50FEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{3491B06C-3327-4F28-8F3B-A284CDFDC99C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3491B06C-3327-4F28-8F3B-A284CDFDC99C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3491B06C-3327-4F28-8F3B-A284CDFDC99C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEA58768-4FDF-4DFB-BA9C-2524B6D50FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEA58768-4FDF-4DFB-BA9C-2524B6D50FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEA58768-4FDF-4DFB-BA9C-2524B6D50FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEA58768-4FDF-4DFB-BA9C-2524B6D50FEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

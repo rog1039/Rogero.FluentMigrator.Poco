@@ -10,9 +10,14 @@ namespace Rogero.FluentMigrator.Poco
 {
     public static class ColumnDataFactory
     {
-        public static ColumnData GetInfo(TableData tableData, PropertyInfo propertyInfo)
+        public static ColumnData? GetInfo(TableData tableData, PropertyInfo propertyInfo)
         {
             var propertyAttributes = propertyInfo.GetCustomAttributes().ToList();
+
+            if (propertyAttributes.Any(z => z.GetType() == typeof(IgnoreForMappingAttribute)))
+            {
+                return null;
+            }
 
             var columnNameInformation = GetColumnName(propertyInfo);
             var columnData            = new ColumnData(columnNameInformation);
@@ -49,7 +54,8 @@ namespace Rogero.FluentMigrator.Poco
 
             if (columnNameIsRowVersion || propertyNameIsRowVersion) return new RowVersionTypeAttribute();
 
-            return DotnetToSqlTypeConverter.Convert(propertyInfo.PropertyType);
+            // return DotnetToSqlTypeConverter.Convert(propertyInfo.PropertyType);
+            return DotnetToSqlTypeConverter.Convert(propertyInfo);
         }
 
         public static ColumnDataPrimaryKey GetPrimaryKeyInfo(PropertyInfo propertyInfo)

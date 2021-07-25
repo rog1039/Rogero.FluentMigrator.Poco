@@ -32,4 +32,9 @@ namespace Rogero.FluentMigrator.Poco.Tests
 
         public TableDataFactoryTests(ITestOutputHelper outputHelperHelper) : base(outputHelperHelper) { }
     }
+
+    public class NullableColumnTests
+    {
+        
+    }
 }

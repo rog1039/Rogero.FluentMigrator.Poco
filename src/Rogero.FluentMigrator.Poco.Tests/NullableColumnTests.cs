@@ -9,11 +9,13 @@ namespace Rogero.FluentMigrator.Poco.Tests
 {
     public class TypeWithNullables
     {
-        public int?    OrderNumber { get; set; }
-        public string? Description { get; set; }
-        public double  Number      { get; set; }
+        public int?    OrderNumber    { get; set; }
+        public string? Description    { get; set; }
+        public double  Number         { get; set; }
+        public double? NumberNullable { get; set; }
+        public string  NotNullObject  { get; set; }
+        public string? NullObject     { get; set; }
     }
-
     public class NullableTests : UnitTestBaseWithConsoleRedirection
     {
         [Fact]
@@ -41,6 +43,18 @@ namespace Rogero.FluentMigrator.Poco.Tests
             columns[2].ColumnDataName.Name.Should().Be("Number");
             columns[2].SqlTypeAttribute.AllowNull.Should().BeFalse();
             columns[2].SqlTypeAttribute.Should().BeOfType(typeof(DoubleTypeAttribute));
+
+            columns[3].ColumnDataName.Name.Should().Be("NumberNullable");
+            columns[3].SqlTypeAttribute.AllowNull.Should().BeTrue();
+            columns[3].SqlTypeAttribute.Should().BeOfType(typeof(DoubleTypeAttribute));
+
+            columns[4].ColumnDataName.Name.Should().Be("NotNullObject");
+            columns[4].SqlTypeAttribute.AllowNull.Should().BeFalse();
+            columns[4].SqlTypeAttribute.Should().BeOfType(typeof(StringTypeAttribute));
+
+            columns[5].ColumnDataName.Name.Should().Be("NullObject");
+            columns[5].SqlTypeAttribute.AllowNull.Should().BeTrue();
+            columns[5].SqlTypeAttribute.Should().BeOfType(typeof(StringTypeAttribute));
         }
 
         public NullableTests(ITestOutputHelper outputHelperHelper) : base(outputHelperHelper) { }

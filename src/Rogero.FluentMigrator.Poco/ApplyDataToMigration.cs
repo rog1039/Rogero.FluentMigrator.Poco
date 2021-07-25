@@ -64,7 +64,7 @@ namespace Rogero.FluentMigrator.Poco
         {
             if(column.SqlTypeAttribute == null) throw new InvalidOperationException("Column does not have SqlType");
             
-            return column.SqlTypeAttribute switch
+            var exp2 = column.SqlTypeAttribute switch
             {
                 BinaryTypeAttribute binaryTypeAttribute       => exp.AsBinary(binaryTypeAttribute.Length),
                 BoolTypeAttribute boolTypeAttribute           => exp.AsBoolean(),
@@ -87,6 +87,10 @@ namespace Rogero.FluentMigrator.Poco
                 _                                             => throw new ArgumentOutOfRangeException(
                     $"No match for: {column.SqlTypeAttribute.GetType().FullName}")
             };
+            var exp3 = column.SqlTypeAttribute.AllowNull
+                ? exp2.Nullable()
+                : exp2.NotNullable();
+            return exp3;
         }
 
         private static ICreateTableColumnOptionOrWithColumnSyntax ApplyStringAttribute(ICreateTableColumnAsTypeSyntax exp, StringTypeAttribute stringTypeAttribute)

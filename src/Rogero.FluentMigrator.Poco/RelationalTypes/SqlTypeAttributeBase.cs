@@ -12,5 +12,11 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
             var nullablePart = AllowNull ? "NULL" : "NOT NULL";
             return ToSqlServerDefinition() + " " + nullablePart;
         }
+        
+        public override string ToString()
+        {
+            var nullablePart = AllowNull ? "  " : "* ";
+            return nullablePart + ToSqlServerDefinition();
+        }
     }
 }

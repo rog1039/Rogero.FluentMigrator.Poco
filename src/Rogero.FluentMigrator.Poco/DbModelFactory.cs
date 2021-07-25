@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FluentMigrator;
+using Rogero.Common.ExtensionMethods;
 
 namespace Rogero.FluentMigrator.Poco
 {
@@ -72,7 +73,7 @@ namespace Rogero.FluentMigrator.Poco
                 return tableData
                     .ColumnCreationData
                     .Select(z => z.ForeignKeyInformation)
-                    .Where(z => z is not null)
+                    .WhereNotNull()
                     .Select(fk =>
                     {
                         var foreignKeyTable = new SchemaTableNames(fk.PrimarySchemaName, fk.PrimaryTableName);
