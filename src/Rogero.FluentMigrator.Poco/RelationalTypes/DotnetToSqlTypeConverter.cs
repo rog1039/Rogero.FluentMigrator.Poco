@@ -41,6 +41,8 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
                 return sqlTypeAttribute;
             }
 
+            if (propertyType.IsEnum) return new StringTypeAttribute();
+            
             throw new NotImplementedException(
                 $"No automatic conversion from dotnet type: {propertyType.Name} to SQL Type.");
         }
