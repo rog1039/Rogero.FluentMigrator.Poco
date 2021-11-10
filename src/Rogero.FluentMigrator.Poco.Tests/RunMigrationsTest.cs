@@ -66,8 +66,8 @@ namespace Rogero.FluentMigrator.Poco.Tests.Runner
                 await dbManipulator.CreateAndUpdateDatabase();
             });
 
-            failCreatingDatabase.Should()
-                .Throw<Exception>(
+            await failCreatingDatabase.Should()
+                .ThrowAsync<Exception>(
                     $"This fails because FluentMigrator doesn't sequence operations in appropriate order. {nameof(DbModelFactory)} can help topologically sort create statements to prevent this.");
         }
 

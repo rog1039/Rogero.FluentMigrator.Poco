@@ -48,7 +48,7 @@ namespace Rogero.FluentMigrator.Poco
                     select (T) attribute).FirstOrDefault();
         }
         
-        public static bool IsNotNullOrWhitespace(this string s) => !IsNullOrWhitespace(s);
+        public static bool IsNotNullOrWhitespace(this string? s) => !IsNullOrWhitespace(s);
 
         public static bool IsNullOrWhitespace(this string? s)
         {

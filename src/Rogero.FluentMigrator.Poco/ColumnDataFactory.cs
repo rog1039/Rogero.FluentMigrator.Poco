@@ -27,8 +27,19 @@ namespace Rogero.FluentMigrator.Poco
             columnData.IdentityInformation    = GetIdentityInfo(columnData, propertyInfo);
             columnData.ForeignKeyInformation  = GetForeignKeyInfo(tableData, propertyInfo);
             columnData.CascadeRuleInformation = GetCascadeRuleInfo(tableData, propertyInfo, propertyAttributes);
+            columnData.ColumnOrderInformation = GetColumnOrderInfo(tableData, propertyInfo, propertyAttributes);
 
             return columnData;
+        }
+
+        private static ColumnOrderInformation? GetColumnOrderInfo(TableData tableData, PropertyInfo propertyInfo, List<Attribute> propertyAttributes)
+        {
+            var columnOrderAttrib = propertyAttributes.SingleOrDefaultOfType<ColumnOrderAttribute>();
+            return columnOrderAttrib switch
+            {
+                null => new ColumnOrderInformation(0),
+                _    => new ColumnOrderInformation(columnOrderAttrib.ColumnOrder)
+            };
         }
 
         public static ColumnDataName GetColumnName(PropertyInfo propertyInfo)

@@ -7,7 +7,7 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
 {
     public static class DotnetToSqlTypeConverter
     {
-        private static readonly Dictionary<Type, Func<SqlTypeAttributeBase>> DotnetSqlTypeAttributeMap = new()
+        public static readonly Dictionary<Type, Func<SqlTypeAttributeBase>> DotnetSqlTypeAttributeMap = new()
         {
             {typeof(string),()=> new StringTypeAttribute()},
             {typeof(short), ()=> new Int16TypeAttribute()},
@@ -41,7 +41,13 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
                 return sqlTypeAttribute;
             }
 
-            if (propertyType.IsEnum) return new StringTypeAttribute();
+            if (propertyType.IsEnum)
+            {
+                return new StringTypeAttribute()
+                {
+                    AllowNull = isNullableStruct || hasNullableAttribute
+                };
+            }
             
             throw new NotImplementedException(
                 $"No automatic conversion from dotnet type: {propertyType.Name} to SQL Type.");
@@ -49,22 +55,31 @@ namespace Rogero.FluentMigrator.Poco.RelationalTypes
 
         public static SqlTypeAttributeBase Convert(PropertyInfo propertyInfo)
         {
-            var isNullable       = propertyInfo.IsNullable();
+            var isMemberNullable = propertyInfo.IsMemberNullable();
             var isNullableStruct = propertyInfo.PropertyType.IsNullableStruct();
 
             var propertyType = isNullableStruct
                 ? Nullable.GetUnderlyingType(propertyInfo.PropertyType)
                 : propertyInfo.PropertyType;
-            
+
             if (DotnetSqlTypeAttributeMap.TryGetValue(propertyType, out var sqlTypeAttributeFunc))
             {
                 var sqlTypeAttribute = sqlTypeAttributeFunc();
-                sqlTypeAttribute.AllowNull = isNullable;
+                sqlTypeAttribute.AllowNull = isMemberNullable;
                 return sqlTypeAttribute;
             }
+            
+            if (propertyType.IsEnum)
+            {
+                return new StringTypeAttribute()
+                {
+                    AllowNull = isNullableStruct || isMemberNullable
+                };
+            }
+            
 
             throw new NotImplementedException(
-                $"No automatic conversion from dotnet type: {propertyType.Name} to SQL Type.");
+                $"No automatic conversion from dotnet type: {propertyType.FullName} to SQL Type.");
         }
     }
 }

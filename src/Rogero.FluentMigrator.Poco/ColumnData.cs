@@ -7,11 +7,12 @@ namespace Rogero.FluentMigrator.Poco
     {
         public ColumnDataName      ColumnDataName { get; set; }
         
-        public ColumnDataPrimaryKey?  PrimaryKeyInformation  { get; set; }
-        public ColumnDataIdentity?    IdentityInformation    { get; set; }
-        public ColumnDataForeignKey?  ForeignKeyInformation  { get; set; }
-        public SqlTypeAttributeBase?  SqlTypeAttribute       { get; set; }
-        public ColumnDataCascadeRule? CascadeRuleInformation { get; set; }
+        public ColumnDataPrimaryKey?   PrimaryKeyInformation  { get; set; }
+        public ColumnDataIdentity?     IdentityInformation    { get; set; }
+        public ColumnDataForeignKey?   ForeignKeyInformation  { get; set; }
+        public SqlTypeAttributeBase?   SqlTypeAttribute       { get; set; }
+        public ColumnDataCascadeRule?  CascadeRuleInformation { get; set; }
+        public ColumnOrderInformation ColumnOrderInformation { get; set; }
 
         public ColumnData(ColumnDataName columnDataName)
         {
@@ -39,4 +40,6 @@ namespace Rogero.FluentMigrator.Poco
     }
 
     public record UniqueConstraintInformation(string Name);
+
+    public record ColumnOrderInformation(int Order);
 }
