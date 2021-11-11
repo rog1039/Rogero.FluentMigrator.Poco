@@ -1,3 +1,1 @@
-﻿namespace Rogero.FluentMigrator.Poco.Tests
-{
-}
+﻿namespace Rogero.FluentMigrator.Poco.Tests; 

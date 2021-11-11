@@ -1,16 +1,14 @@
-﻿using System;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
-namespace Rogero.FluentMigrator.Poco.Tests
+namespace Rogero.FluentMigrator.Poco.Tests.Infrastructure;
+
+public class UnitTestBaseWithConsoleRedirection
 {
-    public class UnitTestBaseWithConsoleRedirection
-    {
-        protected ITestOutputHelper _outputHelper;
+    protected ITestOutputHelper _outputHelper;
 
-        public UnitTestBaseWithConsoleRedirection(ITestOutputHelper outputHelperHelper)
-        {
-            Console.SetOut(new TestOutputHelperToTextWriterAdapter(outputHelperHelper));
-            _outputHelper = outputHelperHelper;
-        }
+    public UnitTestBaseWithConsoleRedirection(ITestOutputHelper outputHelperHelper)
+    {
+        Console.SetOut(new TestOutputHelperToTextWriterAdapter(outputHelperHelper));
+        _outputHelper = outputHelperHelper;
     }
 }

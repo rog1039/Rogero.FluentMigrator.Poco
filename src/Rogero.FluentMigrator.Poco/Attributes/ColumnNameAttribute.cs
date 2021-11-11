@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace Rogero.FluentMigrator.Poco.Attributes;
 
-namespace Rogero.FluentMigrator.Poco.Attributes
+public class ColumnNameAttribute : Attribute
 {
-    public class ColumnNameAttribute : Attribute
-    {
-        public string ColumnName { get; }
+    public string ColumnName { get; }
 
-        public ColumnNameAttribute(string columnName)
-        {
-            ColumnName = columnName;
-        }
+    public ColumnNameAttribute(string columnName)
+    {
+        ColumnName = columnName;
     }
 }

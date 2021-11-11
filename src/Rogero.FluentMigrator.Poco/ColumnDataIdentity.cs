@@ -1,25 +1,24 @@
-namespace Rogero.FluentMigrator.Poco
+namespace Rogero.FluentMigrator.Poco;
+
+public class ColumnDataIdentity
 {
-    public class ColumnDataIdentity
-    {
-        public int Seed      { get; set; }
-        public int Increment { get; set; }
+    public int Seed      { get; set; }
+    public int Increment { get; set; }
         
-        public ColumnDataIdentity(int seed, int increment)
-        {
-            Seed      = seed;
-            Increment = increment;
-        }
+    public ColumnDataIdentity(int seed, int increment)
+    {
+        Seed      = seed;
+        Increment = increment;
+    }
 
-        public void Deconstruct(out int seed, out int increment)
-        {
-            seed      = Seed;
-            increment = Increment;
-        }
+    public void Deconstruct(out int seed, out int increment)
+    {
+        seed      = Seed;
+        increment = Increment;
+    }
 
-        public override string ToString()
-        {
-            return $"Seed: {Seed}, Inc: {Increment}";
-        }
+    public override string ToString()
+    {
+        return $"Seed: {Seed}, Inc: {Increment}";
     }
 }

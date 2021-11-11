@@ -1,29 +1,27 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 
-namespace Rogero.FluentMigrator.Poco.Attributes
+namespace Rogero.FluentMigrator.Poco.Attributes;
+
+public class TableNameAttribute : Attribute
 {
-    public class TableNameAttribute : Attribute
+    public string TableName  { get; }
+    public string SchemaName { get; }
+
+    public TableNameAttribute(string tableName, string schemaName = "dbo")
     {
-        public string TableName  { get; }
-        public string SchemaName { get; }
-
-        public TableNameAttribute(string tableName, string schemaName = "dbo")
-        {
-            TableName  = tableName;
-            SchemaName = schemaName;
-        }
+        TableName  = tableName;
+        SchemaName = schemaName;
     }
-
-    public class CascadeRuleAttribute : Attribute
-    {
-        public Rule CascadeRule { get; set; }
-
-        public CascadeRuleAttribute(Rule cascadeRule)
-        {
-            CascadeRule = cascadeRule;
-        }
-    }
-
-    public class IgnoreForMappingAttribute:Attribute{}
 }
+
+public class CascadeRuleAttribute : Attribute
+{
+    public Rule CascadeRule { get; set; }
+
+    public CascadeRuleAttribute(Rule cascadeRule)
+    {
+        CascadeRule = cascadeRule;
+    }
+}
+
+public class IgnoreForMappingAttribute:Attribute{}

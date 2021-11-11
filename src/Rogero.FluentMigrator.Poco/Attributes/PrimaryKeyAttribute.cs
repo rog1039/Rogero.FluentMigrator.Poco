@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace Rogero.FluentMigrator.Poco.Attributes;
 
-namespace Rogero.FluentMigrator.Poco.Attributes
+public class PrimaryKeyAttribute : Attribute
 {
-    public class PrimaryKeyAttribute : Attribute
-    {
-        public bool IsPrimaryKey { get; }
+    public bool IsPrimaryKey { get; }
 
-        public PrimaryKeyAttribute(bool isPrimaryKey = true)
-        {
-            IsPrimaryKey = isPrimaryKey;
-        }
+    public PrimaryKeyAttribute(bool isPrimaryKey = true)
+    {
+        IsPrimaryKey = isPrimaryKey;
     }
 }

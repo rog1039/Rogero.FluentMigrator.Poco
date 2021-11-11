@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="FluentMigrator" Version="3.3.1" />
-        <PackageReference Include="FluentMigrator.Runner" Version="3.3.1" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentMigrator" Version="3.3.1"/>
+    <PackageReference Include="FluentMigrator.Runner" Version="3.3.1"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\Rogero.Common\src\Rogero.Common\Rogero.Common\Rogero.Common.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Rogero.Common\src\Rogero.Common\Rogero.Common\Rogero.Common.csproj"/>
+  </ItemGroup>
 
 </Project>
