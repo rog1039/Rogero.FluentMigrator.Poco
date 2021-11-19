@@ -44,9 +44,9 @@ public static class Extensions
                 select (T) attribute).FirstOrDefault();
     }
         
-    public static bool IsNotNullOrWhitespace(this string? s) => !IsNullOrWhitespace(s);
+    public static bool IsNotNullOrWhitespace(this string? s) => !IsNullOrWhitespace2(s);
 
-    public static bool IsNullOrWhitespace(this string? s)
+    public static bool IsNullOrWhitespace2(this string? s)
     {
         return string.IsNullOrWhiteSpace(s);
     }

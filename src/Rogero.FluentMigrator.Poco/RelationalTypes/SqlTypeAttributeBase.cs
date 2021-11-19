@@ -13,6 +13,7 @@ public abstract class SqlTypeAttributeBase : Attribute
         
     public override string ToString()
     {
+        return ToSqlServerDefinitionWithNullable();
         var nullablePart = AllowNull ? "  " : "* ";
         return nullablePart + ToSqlServerDefinition();
     }

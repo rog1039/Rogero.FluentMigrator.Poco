@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using FluentMigrator.Infrastructure.Extensions;
+using Rogero.Common.ExtensionMethods;
 using Rogero.FluentMigrator.Poco.Attributes;
 using Rogero.FluentMigrator.Poco.RelationalTypes;
 
