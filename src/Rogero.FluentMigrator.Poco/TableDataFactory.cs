@@ -13,6 +13,7 @@ public static class TableDataFactory
         var columnCreationDatas = type
             .GetBasePropertiesFirst()
             .Where(z => z.GetMethod?.IsStatic != true)
+            .Where(z => !z.PropertyType.FullName.Contains("System.Collections.Generic.List"))
             .Select(prop => ColumnDataFactory.GetInfo(tableCreationData, prop))
             .WhereNotNull()
             .OrderBy(z => GetColumnOrder(z))

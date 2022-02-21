@@ -83,7 +83,7 @@ public static class DotnetToSqlTypeConverter
 
         if (propertyType.IsEnum)
             return new StringTypeAttribute() { Length = 100 };
-
+        
         throw new NotImplementedException(
             $"No automatic conversion from dotnet type: {propertyType.FullName} to SQL Type.");
     }
