@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/projectSettingsUpdater.xml
+/.idea.Rogero.FluentMigrator.Poco.iml
+/modules.xml
+/contentModel.xml
+# Datasource local storage ignored files
+/../../../../../../:\wg\Rogero.FluentMigrator.Poco\.idea\.idea.Rogero.FluentMigrator.Poco\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
