@@ -22,7 +22,8 @@ public static class ApplyDataToMigration
         }
     }
 
-    public static void Apply(this Migration            migration, TableData tableData,
+    public static void Apply(this Migration            migration, 
+                             TableData tableData,
                              DbModelApplicationOptions options = null)
     {
         options ??= new ();
